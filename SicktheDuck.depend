@@ -1,0 +1,45 @@
+# depslib dependency file v1.0
+1739927968 source:c:\cb\realmmo\main.cpp
+	<iostream>
+	<SDL.h>
+	<SDL_image.h>
+	"graphics.h"
+	"defs.h"
+	"game.h"
+
+1739927657 c:\cb\realmmo\graphics.h
+	<vector>
+	<SDL.h>
+	<SDL_image.h>
+	"defs.h"
+
+1739903215 c:\cb\realmmo\defs.h
+
+1739928003 c:\cb\realmmo\game.h
+	<SDL.h>
+	<SDL_image.h>
+
+1740158655 source:c:\cb\sicktheduck\main.cpp
+	<iostream>
+	<SDL.h>
+	<SDL_image.h>
+	"graphics.h"
+	"defs.h"
+	"game.h"
+
+1740158655 c:\cb\sicktheduck\graphics.h
+	<SDL.h>
+	<SDL_image.h>
+	<vector>
+	"defs.h"
+
+1740158655 c:\cb\sicktheduck\defs.h
+
+1740159775 c:\cb\sicktheduck\game.h
+	<SDL.h>
+	<SDL_image.h>
+
+1740145900 c:\cb\sicktheduck\animations.h
+	<SDL.h>
+	<SDL_image.h>
+
