@@ -19,27 +19,32 @@
 	<SDL.h>
 	<SDL_image.h>
 
-1740158655 source:c:\cb\sicktheduck\main.cpp
+1740924034 source:c:\cb\sicktheduck\main.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
 	"graphics.h"
 	"defs.h"
 	"game.h"
+	"gameobjects.h"
 
-1740158655 c:\cb\sicktheduck\graphics.h
+1740923032 c:\cb\sicktheduck\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	"defs.h"
 
-1740158655 c:\cb\sicktheduck\defs.h
+1740923070 c:\cb\sicktheduck\defs.h
 
-1740159775 c:\cb\sicktheduck\game.h
+1740924442 c:\cb\sicktheduck\game.h
 	<SDL.h>
 	<SDL_image.h>
+	"graphics.h"
+	"gameobjects.h"
 
 1740145900 c:\cb\sicktheduck\animations.h
 	<SDL.h>
 	<SDL_image.h>
+
+1740842853 c:\cb\sicktheduck\gameobjects.h
 

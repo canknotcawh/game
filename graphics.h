@@ -13,19 +13,12 @@ struct Sprite {
     int frameDelay = 100;
     Uint32 lastTickTime;
 
-    void init(SDL_Texture* _texture, int frames, const int _clips [][4]) {
-        texture = _texture;
-        lastTickTime = SDL_GetTicks();
+    void init(SDL_Texture* _texture, int frames, const SDL_Rect _clips[]) {
+    texture = _texture;
+    lastTickTime = SDL_GetTicks();
 
-        SDL_Rect clip;
-        for (int i = 0; i < frames; i++) {
-            clip.x = _clips[i][0];
-            clip.y = _clips[i][1];
-            clip.w = _clips[i][2];
-            clip.h = _clips[i][3];
-            clips.push_back(clip);
-        }
-    }
+    clips.assign(_clips, _clips + frames);
+}
 
     void tick(Uint32 currentTime) {
         if (currentTime - lastTickTime >= frameDelay) {
@@ -61,8 +54,7 @@ struct Graphics {
         if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
             logErrorAndExit( "SDL_image error:", IMG_GetError());
 
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED |
-                                              SDL_RENDERER_PRESENTVSYNC);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED |SDL_RENDERER_PRESENTVSYNC);
 
         if (renderer == nullptr) logErrorAndExit("CreateRenderer", SDL_GetError());
 
@@ -74,6 +66,16 @@ struct Graphics {
     {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+    }
+
+    SDL_Window* getWindow()
+    {
+        return window;
+    }
+
+    SDL_Renderer*getRenderer()
+    {
+        return renderer;
     }
 
 	void prepareScene(SDL_Texture * background)

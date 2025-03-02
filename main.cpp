@@ -25,27 +25,25 @@ int main(int argc, char* argv[])
     Graphics graphics;
     graphics.init();
 
-    Player player;
-    player.x = 10;
-    player.y = 540;
-    player.rect = {player.x, player.y, 64, 64};
+    CTX ctx;
+    ctx.window = graphics.getWindow();
+    ctx.renderer = graphics.getRenderer();
 
-    Sprite sprite;
     SDL_Texture* playerTexture = graphics.loadTexture(PLAYER_SPRITE_FILE);
-    sprite.init(playerTexture, PLAYER_FRAMES, clips);
+    if (!playerTexture) {
+        cerr << "Error loading player sprite!\n";
+        return -1;
+    }
 
-    //ScrollingBackground background;
-    //background.setTexture(graphics.loadTexture("backgrounds/123456.png"));
-
-    //Obstacle obstacles;
-    initObstacles(graphics);
+    ctx.player.sprite.init(playerTexture, PLAYER_FRAMES, player_movingsouth_clips);
 
     graphics.presentScene();
     waitUntilKeyPressed();
 
     bool quit = false;
     SDL_Event event;
-    while (!quit && !gameOver(player)) {
+
+    while (!quit && !gameOver(ctx.player)) {
         Uint32 currentTime = SDL_GetTicks();
         graphics.prepareScene();
 
@@ -53,46 +51,37 @@ int main(int argc, char* argv[])
             if (event.type == SDL_QUIT) quit = true;
         }
 
-        sprite.tick(currentTime);
-
-        graphics.rendersprite(player.x, player.y, sprite);
-
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-        player.checkincreaseSpeed(currentKeyStates);
-
         if (currentKeyStates[SDL_SCANCODE_UP]) {
-            player.moveNorth();
+            ctx.player.moveNorth();
+            ctx.player.sprite.clips.assign(std::begin(player_movingnorth_clips), std::end(player_movingnorth_clips));
         }
         else if (currentKeyStates[SDL_SCANCODE_DOWN]) {
-            player.moveSouth();
+            ctx.player.moveSouth();
+            ctx.player.sprite.clips.assign(std::begin(player_movingsouth_clips), std::end(player_movingsouth_clips));
         }
         else if (currentKeyStates[SDL_SCANCODE_LEFT]) {
-            player.moveWest();
+            ctx.player.moveWest();
+            ctx.player.sprite.clips.assign(std::begin(player_movingwest_clips), std::end(player_movingwest_clips));
         }
         else if (currentKeyStates[SDL_SCANCODE_RIGHT]) {
-            player.moveEast();
+            ctx.player.moveEast();
+            ctx.player.sprite.clips.assign(std::begin(player_movingeast_clips), std::end(player_movingeast_clips));
         }
         else {
-            player.stopMovement();
+            ctx.player.stopMovement();
         }
 
-        player.move();
-        checkCollisions(player, obstacles);
+        handleMovement(ctx, currentTime);
+        ctx.player.move();
 
-        render(player, graphics);
-        renderObstacles(graphics);
-
-        //background.scroll(1);
-        //graphics.renderbackground(background);
+        render(ctx);
 
         graphics.presentScene();
-        SDL_Delay(1);
+        SDL_Delay(16);
 
     }
-    //SDL_DestroyTexture( playerTexture );
-    //playerTexture = nullptr;
-    //SDL_DestroyTexture( background.texture );
     graphics.quit();
 
     return 0;
