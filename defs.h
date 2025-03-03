@@ -5,12 +5,12 @@
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-const int PLAYER_WIDTH = 38;
-const int PLAYER_HEIGHT = 53;
+const int PLAYER_WIDTH = 64;
+const int PLAYER_HEIGHT = 64;
 
 const char* WINDOW_TITLE = "SicktheDuck";
 
-const char* PLAYER_SPRITE_FILE = "characters/allsprites.jpg";
+const char* PLAYER_SPRITE_FILE = "allpics/player/player.png";
 const SDL_Rect player_movingsouth_clips[] = {
     {  0, 0, 64, 64},
     { 64, 0, 64, 64},
@@ -39,4 +39,4 @@ const SDL_Rect player_movingnorth_clips[] = {
 const int PLAYER_FRAMES = sizeof(player_movingsouth_clips) / sizeof(int) / 4;
 
 
-#endif
+#endif // _DEFS__H

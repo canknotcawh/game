@@ -117,8 +117,6 @@ struct Graphics {
 
         dest.x = x;
         dest.y = y;
-        //dest.w = src w;
-        //dest.h = src->h;
 
         SDL_RenderCopy(renderer, texture, src, &dest);
     }
@@ -131,12 +129,7 @@ struct Graphics {
         SDL_DestroyWindow(window);
         SDL_Quit();
     }
-    void rendersprite(int x, int y, const Sprite& sprite) {
-        const SDL_Rect* clip = sprite.getCurrentClip();
-        SDL_Rect renderQuad = {x, y, clip->w, clip->h};
-        SDL_RenderCopy(renderer, sprite.texture, clip, &renderQuad);
-    }
 
 };
 
-#endif
+#endif // _GRAPHICS__H
