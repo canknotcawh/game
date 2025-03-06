@@ -6,7 +6,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "graphics.h"
-#include "gameobjects.h"
 
 struct Player {
     int x, y;
@@ -14,8 +13,17 @@ struct Player {
     int speed = INITIAL_SPEED;
     SDL_Rect rect;
     Sprite sprite;
+    SDL_Texture*drinkingTexture = nullptr;
+    SDL_Texture*attackingTexture = nullptr;
 
+    Uint32 currentTime = SDL_GetTicks();
     int direction = 0;
+
+    bool isDrinking = false;
+    Uint32 drinkingStartTime = 0;
+
+    bool isAttacking = false;
+    Uint32 attackingStarTime = 0;
 
     void setDirection(int direction, SDL_Texture* texture) {
     if (this->direction != direction) {
@@ -51,10 +59,12 @@ struct Player {
     }
 
     void move() {
-        x += dx;
-        y += dy;
-        rect.x = x;
-        rect.y = y;
+        if (!isDrinking){
+            x += dx;
+            y += dy;
+            rect.x = x;
+            rect.y = y;
+        }
     }
 
     void moveSouth() {
@@ -77,6 +87,79 @@ struct Player {
         dx = 0;
         dy = 0;
         sprite.currentFrame = 0;
+    }
+    void startDrinking(SDL_Texture* texture) {
+        if (!isDrinking) {
+            isDrinking = true;
+            drinkingStartTime = SDL_GetTicks();
+            drinkingTexture = texture;
+            sprite.currentFrame = 0;
+            sprite.lastTickTime = SDL_GetTicks();
+            sprite.frameDelay = 100;
+            switch (direction) {
+                case 0:{
+                    sprite.init(texture, PLAYER_FRAMES, player_drinking_south_clips);
+                    break;
+                }
+                case 1:{
+                    sprite.init(texture, PLAYER_FRAMES, player_drinking_north_clips);
+                    break;
+                }
+                case 2:{
+                    sprite.init(texture, PLAYER_FRAMES, player_drinking_west_clips);
+                    break;
+                }
+                case 3:{
+                    sprite.init(texture, PLAYER_FRAMES, player_drinking_east_clips);
+                    break;
+                }
+            }
+        }
+    }
+    void updateDrinking(Uint32 currentTime) {
+        if (isDrinking) {
+            sprite.tick(currentTime);
+            if (currentTime - drinkingStartTime >= 3000) {
+                isDrinking = false;
+            }
+        }
+    }
+
+    void startAttacking(SDL_Texture* texture) {
+        if (!isAttacking) {
+            isAttacking = true;
+            attackingStarTime = SDL_GetTicks();
+            attackingTexture = texture;
+            sprite.currentFrame = 0;
+            sprite.lastTickTime = SDL_GetTicks();
+            sprite.frameDelay = 100;
+            switch (direction) {
+                case 0:{
+                    sprite.init(texture, PLAYER_FRAMES, player_idlestab_south_clips);
+                    break;
+                }
+                case 1:{
+                    sprite.init(texture, PLAYER_FRAMES, player_idlepunch_north_clips);
+                    break;
+                }
+                case 2:{
+                    sprite.init(texture, PLAYER_FRAMES, player_idlepunch_west_clips);
+                    break;
+                }
+                case 3:{
+                    sprite.init(texture, PLAYER_FRAMES, player_idlepunch_east_clips);
+                    break;
+                }
+            }
+        }
+    }
+    void updateAttacking(Uint32 currentTime) {
+        if (isAttacking) {
+            sprite.tick(currentTime);
+            if (currentTime - attackingStarTime >= 100) {
+                isAttacking = false;
+            }
+        }
     }
 
     bool isMoving() const{
@@ -115,7 +198,6 @@ struct Background {
 
 
 struct CTX {
-
     SDL_Window* window;
     SDL_Renderer* renderer;
     Player player;
@@ -130,34 +212,30 @@ inline void initClips(CTX& ctx) {
 
 inline void handleMovement(CTX& ctx, Uint32 currentTime) {
     Player& player = ctx.player;
-    if (player.isMovingSouth()){
-        player.setDirection(0, player.sprite.texture);
-    }
-    else if (player.isMovingNorth()){
-        player.setDirection(1, player.sprite.texture);
-    }
-    else if (player.isMovingWest()){
-        player.setDirection(2, player.sprite.texture);
-    }
-    else if (player.isMovingEast()){
-        player.setDirection(3, player.sprite.texture);
-    }
+    player.updateDrinking(currentTime);
+    player.updateAttacking(currentTime);
 
-    if (player.isMoving()) {
-        player.sprite.tick(currentTime);
-        player.move();
+    if (!player.isDrinking && !player.isAttacking) {
+        if (player.isMoving()) {
+            if (player.isMovingSouth())         player.setDirection(0, player.sprite.texture);
+            else if (player.isMovingNorth())    player.setDirection(1, player.sprite.texture);
+            else if (player.isMovingWest())     player.setDirection(2, player.sprite.texture);
+            else if (player.isMovingEast())     player.setDirection(3, player.sprite.texture);
+
+            player.sprite.tick(currentTime);
+            player.move();
+        }
+        else {
+            player.sprite.init(player.sprite.texture, PLAYER_FRAMES, &player_idle_clips[player.direction]);
+        }
     }
 }
 
 inline void render(CTX& ctx) {
     SDL_RenderClear(ctx.renderer);
-
     Sprite& sprite = ctx.player.sprite;
-
     const SDL_Rect* currentClip = &ctx.player.sprite.clips[ctx.player.sprite.currentFrame];
-
     SDL_Rect destRect = { ctx.player.x, ctx.player.y, currentClip->w, currentClip->h };
-
     SDL_RenderCopy(ctx.renderer, ctx.player.sprite.texture, currentClip, &destRect);
     SDL_RenderPresent(ctx.renderer);
 }

@@ -2,7 +2,7 @@
 #define MENU_H
 
 #include <SDL.h>
-#include "buttons.h"
+#include "button.h"
 
 bool showMenu(SDL_Renderer* renderer, ButtonManager& buttonManager) {
     bool running = true;
