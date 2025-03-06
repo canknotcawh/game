@@ -45,8 +45,8 @@ struct Player {
 }
 
     Player(){
-        x = 368;
-        y = 0;
+        x = 20;
+        y = 500;
         rect = { x, y, PLAYER_WIDTH, PLAYER_HEIGHT };
     }
 
@@ -76,62 +76,74 @@ struct Player {
     void stopMovement() {
         dx = 0;
         dy = 0;
-
         sprite.currentFrame = 0;
     }
 
     bool isMoving() const{
         return dx != 0 || dy !=0;
     }
-    bool isMovingLeft() const{
-        return dx < 0;
-    }
-    bool isMovingRight() const{
-        return dx > 0;
-    }
-    bool isMovingUp() const{
-        return dy < 0;
-    }
-    bool isMovingDown() const{
+    bool isMovingSouth() const{
         return dy > 0;
     }
+    bool isMovingNorth() const{
+        return dy < 0;
+    }
+    bool isMovingWest() const{
+        return dx < 0;
+    }
+    bool isMovingEast() const{
+        return dx > 0;
+    }
 };
+
+struct Background {
+    SDL_Texture* texture;
+    int SCREEN_WIDTH;
+    int SCREEN_HEIGHT;
+
+    void init(SDL_Texture* tex, int width, int height) {
+        texture = tex;
+        SCREEN_WIDTH = width;
+        SCREEN_HEIGHT = height;
+    }
+
+    void render(SDL_Renderer* renderer) {
+        SDL_Rect bgRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+        SDL_RenderCopy(renderer, texture, NULL, &bgRect);
+    }
+};
+
 
 struct CTX {
 
     SDL_Window* window;
     SDL_Renderer* renderer;
     Player player;
-
+    Background background;
 };
 
 inline void initClips(CTX& ctx) {
     SDL_Texture* texture = IMG_LoadTexture(ctx.renderer, PLAYER_SPRITE_FILE);
-    if (!texture) {
-        SDL_Log("Failed to load player sprite sheet: %s", IMG_GetError());
-        return;
-    }
     ctx.player.sprite.texture = texture;
-
     ctx.player.sprite.init(texture, PLAYER_FRAMES, player_movingsouth_clips);
 }
 
 inline void handleMovement(CTX& ctx, Uint32 currentTime) {
     Player& player = ctx.player;
-    if (player.dy > 0){
+    if (player.isMovingSouth()){
         player.setDirection(0, player.sprite.texture);
     }
-    else if (player.dy < 0){
+    else if (player.isMovingNorth()){
         player.setDirection(1, player.sprite.texture);
     }
-    else if (player.dx < 0){
+    else if (player.isMovingWest()){
         player.setDirection(2, player.sprite.texture);
     }
-    else if (player.dx > 0){
+    else if (player.isMovingEast()){
         player.setDirection(3, player.sprite.texture);
     }
 
-    if (player.dx != 0 || player.dy != 0) {
+    if (player.isMoving()) {
         player.sprite.tick(currentTime);
         player.move();
     }

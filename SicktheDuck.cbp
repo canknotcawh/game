@@ -32,11 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="buttonmanager.h" />
 		<Unit filename="defs.h" />
 		<Unit filename="game.h" />
-		<Unit filename="gameobjects.h" />
 		<Unit filename="graphics.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="menu.h" />
 		<Unit filename="texturemanager.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

@@ -19,7 +19,7 @@
 	<SDL.h>
 	<SDL_image.h>
 
-1741012334 source:c:\cb\sicktheduck\main.cpp
+1741222621 source:c:\cb\sicktheduck\main.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
@@ -30,15 +30,15 @@
 	"buttons.h"
 	"menu.h"
 
-1741010498 c:\cb\sicktheduck\graphics.h
+1741079919 c:\cb\sicktheduck\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	"defs.h"
 
-1740996659 c:\cb\sicktheduck\defs.h
+1741047427 c:\cb\sicktheduck\defs.h
 
-1741012522 c:\cb\sicktheduck\game.h
+1741078040 c:\cb\sicktheduck\game.h
 	<SDL.h>
 	<SDL_image.h>
 	"graphics.h"
@@ -54,11 +54,12 @@
 	<SDL.h>
 	<SDL_image.h>
 
-1740998671 c:\cb\sicktheduck\buttons.h
+1741222633 c:\cb\sicktheduck\buttons.h
 	<SDL.h>
 	<SDL_image.h>
+	<cstdio>
 
-1741006577 c:\cb\sicktheduck\menu.h
+1741078960 c:\cb\sicktheduck\menu.h
 	<SDL.h>
-	"buttonmanager.h"
+	"buttons.h"
 

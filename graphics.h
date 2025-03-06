@@ -62,10 +62,16 @@ struct Graphics {
         SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
-    void prepareScene()
+    void prepareScene(SDL_Texture* background = nullptr)
     {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        if (background) {
+            SDL_RenderCopy(renderer, background, NULL, NULL);
+        }
+        else {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderClear(renderer);
+        }
     }
 
     SDL_Window* getWindow()
@@ -76,12 +82,6 @@ struct Graphics {
     SDL_Renderer*getRenderer()
     {
         return renderer;
-    }
-
-	void prepareScene(SDL_Texture * background)
-    {
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy( renderer, background, NULL, NULL);
     }
 
     void presentScene()
@@ -100,13 +100,20 @@ struct Graphics {
         return texture;
     }
 
-    void renderTexture(SDL_Texture *texture, int x, int y)
+    void renderTexture(SDL_Texture *texture, SDL_Rect* src, int x, int y)
     {
         SDL_Rect dest;
 
         dest.x = x;
         dest.y = y;
-        SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+
+        if (src) {
+            dest.w = src->w;
+            dest.h = src->h;
+        }
+        else {
+            SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+        }
 
         SDL_RenderCopy(renderer, texture, NULL, &dest);
     }
