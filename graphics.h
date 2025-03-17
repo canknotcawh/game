@@ -36,6 +36,12 @@ struct Sprite {
 struct Graphics {
     SDL_Renderer *renderer;
 	SDL_Window *window;
+	SDL_Texture* backgroundTexture;
+
+	void loadAssets()
+	{
+        backgroundTexture = loadTexture(BACKGROUND_FILE);
+    }
 
 	void logErrorAndExit(const char* msg, const char* error)
     {
@@ -64,15 +70,14 @@ struct Graphics {
 
     void prepareScene(SDL_Texture* background = nullptr)
     {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
         if (background) {
-            SDL_RenderCopy(renderer, background, NULL, NULL);
-        }
-        else {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderClear(renderer);
+            SDL_Rect dest = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+            SDL_RenderCopy(renderer, background, NULL, &dest);
         }
     }
+
 
     SDL_Window* getWindow()
     {
@@ -130,10 +135,10 @@ struct Graphics {
 
     void quit()
     {
-        IMG_Quit();
-
+        SDL_DestroyTexture(backgroundTexture);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        IMG_Quit();
         SDL_Quit();
     }
 

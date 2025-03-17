@@ -10,16 +10,19 @@ bool showMenu(SDL_Renderer* renderer, ButtonManager& buttonManager) {
     bool showHelp = false;
     SDL_Event event;
 
+    SDL_Texture* menuBackground = IMG_LoadTexture(renderer, BACKGROUND_FILE);
+    SDL_Texture* helpTexture = IMG_LoadTexture(renderer, "allpics/backgrounds/goose.jpg");
+
     while (running) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        SDL_RenderCopy(renderer, menuBackground, NULL, NULL);
+
         if (showHelp) {
-            SDL_Texture* helpTexture = IMG_LoadTexture(renderer, "allpics/goose.jpg");
-            SDL_Rect helpRect = {100, 100, 600, 400};
+            SDL_Rect helpRect = {100, 50, 600, 400};
             SDL_RenderCopy(renderer, helpTexture, NULL, &helpRect);
             buttonManager.xbutton.render(renderer);
-            SDL_DestroyTexture(helpTexture);
         }
         else {
             buttonManager.playbutton.render(renderer);
@@ -33,7 +36,7 @@ bool showMenu(SDL_Renderer* renderer, ButtonManager& buttonManager) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            else if (event.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
@@ -52,9 +55,20 @@ bool showMenu(SDL_Renderer* renderer, ButtonManager& buttonManager) {
                     showHelp  = false;
                 }
             }
+            else if (event.type == SDL_MOUSEMOTION) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                buttonManager.playbutton.checkHover(x, y);
+                buttonManager.quitbutton.checkHover(x, y);
+                buttonManager.helpbutton.checkHover(x, y);
+                buttonManager.xbutton.checkHover(x, y);
+            }
         }
         SDL_Delay(16);
     }
+
+    SDL_DestroyTexture(menuBackground);
+    SDL_DestroyTexture(helpTexture);
     return startGame;
 }
 

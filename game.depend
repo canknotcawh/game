@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1741276552 source:c:\cb\game\main.cpp
+1742216412 source:c:\cb\game\main.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
@@ -9,25 +9,25 @@
 	"button.h"
 	"menu.h"
 
-1741223346 c:\cb\game\graphics.h
+1742216460 c:\cb\game\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	"defs.h"
 
-1741277470 c:\cb\game\defs.h
+1742225158 c:\cb\game\defs.h
 
-1741277470 c:\cb\game\game.h
+1742232330 c:\cb\game\game.h
 	<SDL.h>
 	<SDL_image.h>
 	"graphics.h"
 
-1741223346 c:\cb\game\button.h
+1742221360 c:\cb\game\button.h
 	<SDL.h>
 	<SDL_image.h>
 	<cstdio>
 
-1741223365 c:\cb\game\menu.h
+1742220945 c:\cb\game\menu.h
 	<SDL.h>
 	"button.h"
 
