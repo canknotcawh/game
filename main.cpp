@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "defs.h"
 #include "game.h"
+#include "enemy.h"
 #include "button.h"
 #include "menu.h"
 
@@ -17,19 +18,12 @@ int main(int argc, char* argv[])
     SDL_Renderer* renderer = graphics.getRenderer();
     ButtonManager buttonManager(renderer);
 
-    SDL_Texture* backgroundTexture = graphics.loadTexture(BACKGROUND_FILE);
-
-    if (!backgroundTexture) {
-        SDL_Log("Failed to load background texture: %s", IMG_GetError());
-    } else {
-        int w, h;
-        SDL_QueryTexture(backgroundTexture, NULL, NULL, &w, &h);
-        SDL_Log("Background loaded: Width = %d, Height = %d", w, h);
-    }
-
     CTX ctx;
     ctx.window = graphics.getWindow();
     ctx.renderer = graphics.getRenderer();
+    ctx.backgroundTexture = graphics.loadTexture(BACKGROUND_FILE);
+
+    Level level;
 
     bool gameRunning = showMenu(renderer, buttonManager);
     if (!gameRunning) {
@@ -39,6 +33,11 @@ int main(int argc, char* argv[])
 
     SDL_Texture* playerTexture = graphics.loadTexture(PLAYER_SPRITE_FILE);
     ctx.player.sprite.init(playerTexture, PLAYER_FRAMES, player_idle_clips);
+    SDL_Texture* enemyTexture = graphics.loadTexture(ENEMY_SPRITE_FILE);
+
+    for (int i = 0; i < 3; i++) {
+        spawnEnemy(ctx);
+    }
 
     bool quit = false;
     SDL_Event event;
@@ -51,17 +50,16 @@ int main(int argc, char* argv[])
             handleEvent(event, ctx);
         }
 
-        handleMovement(ctx, currentTime);
-        ctx.player.move();
+        updateGame(ctx, currentTime);
 
-        graphics.prepareScene(backgroundTexture);
+        graphics.prepareScene();
         render(ctx);
         graphics.presentScene();
 
         SDL_Delay(16);
     }
 
-    SDL_DestroyTexture(backgroundTexture);
+    cleanup(ctx);
     graphics.quit();
     return 0;
 }

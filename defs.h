@@ -8,13 +8,13 @@ const int SCREEN_HEIGHT = 500;
 const int PLAYER_WIDTH = 34;
 const int PLAYER_HEIGHT = 58;
 
-const int ENEMY_WIDTH = 34;
-const int ENEMY_HEIGHT = 58;
+const int ENEMY_WIDTH = 38;
+const int ENEMY_HEIGHT = 56;
 
 const char* WINDOW_TITLE = "SicktheDuck";
 const char* BACKGROUND_FILE = "allpics/backgrounds/background2.png";
-const char* PLAYER_SPRITE_FILE = "allpics/player/combined_sprites.png";
-const char* ENEMY_SPRITE_FILE = "allpics/player/combined_sprites.png";
+const char* PLAYER_SPRITE_FILE = "allpics/character/combined_sprites.png";
+const char* ENEMY_SPRITE_FILE = "allpics/character/enemy.png";
 
 const SDL_Rect player_movingsouth_clips[] = {
     {18, 80, 28, 58},
@@ -111,15 +111,48 @@ const SDL_Rect player_movingpunch_east_clips[] = {
     {340, 782, 28, 56}
 };
 const SDL_Rect player_movingpunch_north_clips[] = {
-    {16, 1130, 32, 58},
-    {82, 1130, 30, 58},
-    {146, 1132, 26, 58},
-    {210, 1132, 26, 58},
-    {274, 1130, 30, 58},
-    {336, 1130, 32, 58}
+    {16, 850, 32, 58},
+    {82, 850, 30, 58},
+    {146, 852, 26, 58},
+    {210, 852, 26, 58},
+    {274, 850, 30, 58},
+    {336, 850, 32, 58}
+};
+
+const SDL_Rect enemy_movingsouth_clips[] = {
+    {12, 12, 38, 56},
+    {76, 14, 38, 54},
+    {140, 14, 38, 52},
+    {204, 12, 38, 56},
+    {268, 14, 38, 54},
+    {332, 14, 38, 52}
+};
+const SDL_Rect enemy_movingwest_clips[] = {
+    {10, 84, 36, 54},
+    {74, 86, 34, 52},
+    {138, 86, 34, 52},
+    {202, 84, 36, 54},
+    {266, 86, 34, 52},
+    {330, 86, 34, 52}
+};
+const SDL_Rect enemy_movingeast_clips[] = {
+    {18, 154, 36, 56},
+    {84, 156, 34, 54},
+    {148, 156, 34, 54},
+    {210, 154, 36, 56},
+    {276, 156, 34, 54},
+    {340, 156, 34, 54}
+};
+const SDL_Rect enemy_movingnorth_clips[] = {
+    {16, 222, 32, 56},
+    {80, 224, 32, 52},
+    {144, 224, 32, 52},
+    {208, 222, 32, 56},
+    {272, 224, 32, 52},
+    {336, 224, 32, 52}
 };
 
 const int PLAYER_FRAMES = sizeof(player_movingsouth_clips) / sizeof(int) / 4;
-
+const int ENEMY_FRAMES = sizeof(enemy_movingsouth_clips) / sizeof(int) / 4;
 
 #endif // _DEFS__H

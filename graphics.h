@@ -10,7 +10,7 @@ struct Sprite {
     SDL_Texture* texture;
     std::vector<SDL_Rect> clips;
     int currentFrame = 0;
-    int frameDelay = 100;
+    int frameDelay = 80;
     Uint32 lastTickTime;
 
     void init(SDL_Texture* _texture, int frames, const SDL_Rect _clips[]) {
@@ -36,7 +36,7 @@ struct Sprite {
 struct Graphics {
     SDL_Renderer *renderer;
 	SDL_Window *window;
-	SDL_Texture* backgroundTexture;
+    SDL_Texture* backgroundTexture = nullptr;
 
 	void loadAssets()
 	{
@@ -72,10 +72,6 @@ struct Graphics {
     {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
-        if (background) {
-            SDL_Rect dest = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-            SDL_RenderCopy(renderer, background, NULL, &dest);
-        }
     }
 
 
@@ -135,7 +131,6 @@ struct Graphics {
 
     void quit()
     {
-        SDL_DestroyTexture(backgroundTexture);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         IMG_Quit();

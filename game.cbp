@@ -33,6 +33,7 @@
 		</Compiler>
 		<Unit filename="button.h" />
 		<Unit filename="defs.h" />
+		<Unit filename="enemy.h" />
 		<Unit filename="game.h" />
 		<Unit filename="graphics.h" />
 		<Unit filename="main.cpp" />
