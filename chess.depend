@@ -1,0 +1,144 @@
+# depslib dependency file v1.0
+1747337660 source:c:\cb\chess\move.cpp
+	"move.h"
+	"piecesdefs.h"
+	"pieces.h"
+	<iostream>
+
+1747334195 c:\cb\chess\move.h
+	<array>
+	<vector>
+	"pieces.h"
+
+1747185169 c:\cb\chess\movedefs.h
+
+1747290675 c:\cb\chess\piecesdefs.h
+	<array>
+
+1747337660 source:c:\cb\chess\game.cpp
+	"game.h"
+	<iostream>
+
+1747337660 c:\cb\chess\game.h
+	<string>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
+	"board.h"
+	"piecesmanager.h"
+	"button.h"
+
+1747337660 c:\cb\chess\board.h
+	<SDL.h>
+	<SDL_image.h>
+	"pieces.h"
+	<array>
+
+1747144206 c:\cb\chess\piecesmanger.h
+	<string>
+	<SDL.h>
+	"pieces.h"
+	"board.h"
+	<array>
+
+1747222413 c:\cb\chess\pieces.h
+	<SDL.h>
+	"piecesdefs.h"
+
+1747337660 c:\cb\chess\button.h
+	"ui.h"
+	"buttondefs.h"
+	<string>
+
+1747337660 c:\cb\chess\ui.h
+	<SDL.h>
+	<SDL_ttf.h>
+
+1747145893 c:\cb\chess\buttondefs.h
+
+1747160147 source:c:\cb\chess\main.cpp
+	"game.h"
+	"menu.h"
+
+1747337660 c:\cb\chess\menu.h
+	<string>
+	"button.h"
+	"menudefs.h"
+	<vector>
+
+1747145893 c:\cb\chess\menudefs.h
+
+1747336206 source:c:\cb\chess\menu.cpp
+	"menu.h"
+
+1747135802 source:c:\cb\chess\piecesmanger.cpp
+	"piecesmanger.h"
+	"piecesdefs.h"
+	"move.h"
+	<iostream>
+
+1747337660 source:c:\cb\chess\ui.cpp
+	"ui.h"
+
+1747160147 source:c:\cb\chess\button.cpp
+	"button.h"
+	<SDL_ttf.h>
+	"texturemanager.h"
+	<iostream>
+
+1747134381 c:\cb\chess\texturemanger.h
+	<SDL.h>
+
+1747134392 source:c:\cb\chess\texturemanger.cpp
+	"texturemanger.h"
+	<SDL_image.h>
+	<cstddef>
+
+1747337660 source:c:\cb\chess\pieces.cpp
+	"pieces.h"
+	"texturemanager.h"
+	"piecesdefs.h"
+	<SDL_error.h>
+	<iostream>
+	<SDL_image.h>
+
+1747337770 source:c:\cb\chess\board.cpp
+	"piecesdefs.h"
+	"board.h"
+	"move.h"
+	"colordefs.h"
+	<iostream>
+
+1747145893 c:\cb\chess\colordefs.h
+
+1747337660 source:c:\cb\chess\piecesmanager.cpp
+	"piecesmanager.h"
+	"piecesdefs.h"
+	"move.h"
+	<iostream>
+
+1747335502 c:\cb\chess\piecesmanager.h
+	<string>
+	<SDL.h>
+	"pieces.h"
+	"board.h"
+	"move.h"
+	<array>
+
+1747337660 source:c:\cb\chess\texturemanager.cpp
+	"texturemanager.h"
+	<SDL_image.h>
+	<cstddef>
+
+1747337660 c:\cb\chess\texturemanager.h
+	<SDL.h>
+
+1747180265 c:\cb\chess\check.h
+	<array>
+	"piecesdefs.h"
+	"movedefs.h"
+
+1747180589 source:c:\cb\chess\check.cpp
+	"check.h"
+	<vector>
+
