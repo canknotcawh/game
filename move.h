@@ -22,7 +22,9 @@ class Move
 public:
     static bool isBlackKingInCheck(const std::vector<MoveInfo>& moveHistory, const std::array<std::array<int, 8>, 8>& board, int kingX, int kingY);
     static bool isWhiteKingInCheck(const std::vector<MoveInfo>& moveHistory, const std::array<std::array<int, 8>, 8>& board, int kingX, int kingY);
-    static bool ValidMove(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard, PiecePosition p_OldPosition, PiecePosition p_NewPosition, const std::vector<MoveInfo>& moveHistory);
+    static bool canCastle(const std::array<std::array<int, 8>, 8>& board, bool isWhite, const std::vector<MoveInfo>& moveHistory);
+    static bool canEnPassant(const std::array<std::array<int, 8>, 8>& board, bool isWhite, const std::vector<MoveInfo>& moveHistory);
+    static bool ValidMove(const std::array<std::array<int, 8>, 8>& board, PiecePosition from, PiecePosition to, const std::vector<MoveInfo>& moveHistory);
 
     void addMove(int startX, int startY, int endX, int endY, int pieceMoved, int pieceCaptured);
     const std::vector<MoveInfo>& getMoveHistory() const;

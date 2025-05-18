@@ -9,6 +9,9 @@ class Menu
 public:
     Menu(SDL_Renderer* p_Renderer);
     void DisplayMenu();
+    void initPromotionButtons(SDL_Renderer* renderer);
+    void displayPromotion(SDL_Renderer* renderer);
+    int handlePromotionEvent();
     void DisplayGameOver(std::string p_Winner);
     void Update(SDL_Window* p_Window);
 

@@ -8,8 +8,8 @@ void Menu::initButtons()
 
 void Menu::setButtonProperty()
 {
-	m_PlayButton->setFontSize(50);
-	m_QuitButton->setFontSize(50);
+	m_PlayButton->setFontSize(700);
+	m_QuitButton->setFontSize(700);
 	// Play button
 	m_PlayButton->setPosition(100,100);
 	// Quit button
@@ -31,7 +31,6 @@ void Menu::DisplayMenu()
 
 	m_PlayButton->render();
 	m_QuitButton->render();
-
 
 	SDL_RenderPresent(m_Renderer);
 }

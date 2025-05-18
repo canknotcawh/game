@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "pieces.h"
+#include "move.h"
 #include <array>
 
 class Board {
@@ -16,20 +17,26 @@ private:
     void showHints(Player p_Player);
     void showPieceHightlight(unsigned const int row, unsigned const int col);
 
-    void WhitePawnHint();
+    Move moveManager;
+
     void BlackPawnHint();
-    void KingHint();
+    void WhitePawnHint();
+    void BlackKingHint();
+    void WhiteKingHint();
     void QueenHint();
     void KnightHint();
     void RookHint();
     void BishopHint();
 private:
     std::array<int, MAX_PIECES_SPACE  > m_Pieces;
-    std::array<std::array<SDL_Color, MAX_PIECES_LINE>, MAX_PIECES_LINE> m_BoardColor;
+    std::array<std::array<SDL_Color, 8>, 8> m_BoardColor;
     Player m_Player;
+
     int m_BoardSize;
     SDL_Renderer* m_Renderer;
     int m_PiecesSize = 75;
+    int whiteKingX, whiteKingY;
+    int blackKingX, blackKingY;
 };
 
 

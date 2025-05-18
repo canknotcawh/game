@@ -2,13 +2,13 @@
 #include "piecesdefs.h"
 #include "pieces.h"
 #include <iostream>
-static bool isBlack(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard , PiecePosition p_NewPosition)
+static bool isBlack(const std::array<std::array<int, 8>, 8>& board , PiecePosition to)
 {
-    return (0 > p_PieceBoard[p_NewPosition.Row][p_NewPosition.Col]) ? true : false;
+    return (0 > board[to.Row][to.Col]) ? true : false;
 }
-static bool isWhite(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard , PiecePosition p_NewPosition)
+static bool isWhite(const std::array<std::array<int, 8>, 8>& board , PiecePosition to)
 {
-    return (0 < p_PieceBoard[p_NewPosition.Row][p_NewPosition.Col]) ? true : false;
+    return (0 < board[to.Row][to.Col]) ? true : false;
 }
 
 void Move::addMove(int startX, int startY, int endX, int endY, int pieceMoved, int pieceCaptured) {
@@ -18,6 +18,7 @@ void Move::addMove(int startX, int startY, int endX, int endY, int pieceMoved, i
 const std::vector<MoveInfo>& Move::getMoveHistory() const {
     return moveHistory;
 }
+
 bool Move::isBlackKingInCheck(const std::vector<MoveInfo>& moveHistory, const std::array<std::array<int, 8>, 8>& board, int blackKingX, int blackKingY) {
     for (int row = 0; row <= 7; ++row) {
         for (int col = 0; col <= 7; ++col) {
@@ -44,381 +45,297 @@ bool Move::isWhiteKingInCheck(const std::vector<MoveInfo>& moveHistory, const st
     }
     return false;
 }
-//pawn
-bool possibleMoveBlackPawn(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard,const PiecePosition StartPos, const PiecePosition EndPos)
+bool Move::canCastle(const std::array<std::array<int, 8>, 8>& board, bool isWhite, const std::vector<MoveInfo>& moveHistory)
 {
+    int row = isWhite ? 7 : 0;
+    PiecePosition kingPos{row, 4};
+    PiecePosition rookKingside{row, 7};
+    PiecePosition rookQueenside{row, 0};
 
-    if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7 ||
-        EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
+    for (const auto& move : moveHistory)
     {
-        return false;
+        if (move.startX == kingPos.Row && move.startY == kingPos.Col)
+            return false;
     }
-    if (StartPos.Row + 1 == EndPos.Row && StartPos.Col == EndPos.Col)
+
+    bool canKingsideCastle = true;
+    for (const auto& move : moveHistory)
     {
-        if (p_PieceBoard[EndPos.Row][EndPos.Col] == PIECES_TYPE::EMPTY)
-            return true;
+        if (move.startX == rookKingside.Row && move.startY == rookKingside.Col)
+            canKingsideCastle = false;
     }
-    else if (StartPos.Row == 1 && StartPos.Col == EndPos.Col)
+
+    if (board[row][5] != PIECES_TYPE::EMPTY || board[row][6] != PIECES_TYPE::EMPTY)
+        canKingsideCastle = false;
+
+    for (int col = 4; col <= 6; ++col)
     {
-        if ( EndPos.Row == 3)
-        {
-            if (p_PieceBoard[EndPos.Row][EndPos.Col] == PIECES_TYPE::EMPTY)
-                return true;
-        }
+        if ((isWhite && Move::isWhiteKingInCheck(moveHistory, board, row, col)) ||
+            (!isWhite && Move::isBlackKingInCheck(moveHistory, board, row, col)))
+            canKingsideCastle = false;
     }
-    else if ((StartPos.Col - 1 == EndPos.Col || StartPos.Col + 1 == EndPos.Col) && (StartPos.Row + 1 == EndPos.Row))
+
+    bool canQueensideCastle = true;
+    for (const auto& move : moveHistory)
     {
-        if (p_PieceBoard[EndPos.Row][EndPos.Col] != PIECES_TYPE::EMPTY)
-            return true;
+        if (move.startX == rookQueenside.Row && move.startY == rookQueenside.Col)
+            canQueensideCastle = false;
     }
-    return false;
+
+    if (board[row][1] != PIECES_TYPE::EMPTY || board[row][2] != PIECES_TYPE::EMPTY || board[row][3] != PIECES_TYPE::EMPTY)
+        canQueensideCastle = false;
+
+    for (int col = 4; col >= 1; --col)
+    {
+        if ((isWhite && Move::isWhiteKingInCheck(moveHistory, board, row, col)) ||
+            (!isWhite && Move::isBlackKingInCheck(moveHistory, board, row, col)))
+            canQueensideCastle = false;
+    }
+
+    return canKingsideCastle || canQueensideCastle;
 }
-
- bool possibleMoveWhitePawn(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard,const PiecePosition StartPos, const PiecePosition EndPos)
+bool possibleMoveBlackKing(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to, const std::vector<MoveInfo>& moveHistory)
 {
-     if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7 ||
-         EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
-     {
-         return false;
-     }
-     if (StartPos.Row - 1 == EndPos.Row && StartPos.Col == EndPos.Col)
-     {
-         if (p_PieceBoard[EndPos.Row][EndPos.Col] == PIECES_TYPE::EMPTY)
-             return true;
-     }
-     else if (StartPos.Row == 6 && StartPos.Col == EndPos.Col)
-     {
-         if (EndPos.Row == 4)
-         {
-             if (p_PieceBoard[EndPos.Row][EndPos.Col] == PIECES_TYPE::EMPTY)
-                 return true;
-         }
-     }
-     else if ((StartPos.Col - 1 == EndPos.Col || StartPos.Col + 1 == EndPos.Col) && (StartPos.Row - 1 == EndPos.Row))
-     {
-
-
-             if (p_PieceBoard[EndPos.Row][EndPos.Col] != PIECES_TYPE::EMPTY)
-                 return true;
-
-     }
-     return false;
-
-}
-//king
-bool possibleMoveBlackKing(const std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE>& p_PieceBoard, const PiecePosition& StartPos, const PiecePosition& EndPos, const std::vector<MoveInfo>& moveHistory)
-{
-    if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7
-        || EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
-    {
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
         return false;
-    }
 
-    int dRow = EndPos.Row - StartPos.Row;
-    int dCol = EndPos.Col - StartPos.Col;
+    int dRow = to.Row - from.Row;
+    int dCol = to.Col - from.Col;
     if (abs(dRow) > 1 || abs(dCol) > 1)
-    {
         return false;
-    }
 
-    int pieceAtStart = p_PieceBoard[StartPos.Row][StartPos.Col];
-    int pieceAtEnd = p_PieceBoard[EndPos.Row][EndPos.Col];
-    if (pieceAtStart >= 0 || (pieceAtEnd < 0))
-    {
+    int pieceAtStart = board[from.Row][from.Col];
+    int pieceAtEnd = board[to.Row][to.Col];
+    if ((pieceAtStart != PIECES_TYPE::BLACK_KING) && (pieceAtEnd < 0))
         return false;
-    }
 
-    auto boardAfterMove = p_PieceBoard;
-    boardAfterMove[EndPos.Row][EndPos.Col] = boardAfterMove[StartPos.Row][StartPos.Col];
-    boardAfterMove[StartPos.Row][StartPos.Col] = PIECES_TYPE::EMPTY;
+    auto tempBoard = board;
+    tempBoard[to.Row][to.Col] = pieceAtStart;
+    tempBoard[from.Row][from.Col] = PIECES_TYPE::EMPTY;
 
-    if (Move::isBlackKingInCheck(moveHistory, boardAfterMove, EndPos.Row, EndPos.Col))
-    {
+    if (Move::isBlackKingInCheck(moveHistory, tempBoard, to.Row, to.Col))
         return false;
-    }
 
     return true;
 }
 
-bool possibleMoveWhiteKing(const std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE>& p_PieceBoard, const PiecePosition& StartPos, const PiecePosition& EndPos, const std::vector<MoveInfo>& moveHistory)
+bool possibleMoveWhiteKing(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to, const std::vector<MoveInfo>& moveHistory)
 {
-    if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7
-        || EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
-    {
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
         return false;
-    }
 
-    int dRow = EndPos.Row - StartPos.Row;
-    int dCol = EndPos.Col - StartPos.Col;
+    int dRow = to.Row - from.Row;
+    int dCol = to.Col - from.Col;
     if (abs(dRow) > 1 || abs(dCol) > 1)
-    {
         return false;
-    }
 
-    int pieceAtStart = p_PieceBoard[StartPos.Row][StartPos.Col];
-    int pieceAtEnd = p_PieceBoard[EndPos.Row][EndPos.Col];
-    if (pieceAtStart <= 0 || (pieceAtEnd > 0))
-    {
+    int pieceAtStart = board[from.Row][from.Col];
+    int pieceAtEnd = board[to.Row][to.Col];
+    if ((pieceAtStart != PIECES_TYPE::WHITE_KING) && (pieceAtEnd > 0))
         return false;
-    }
 
-    auto boardAfterMove = p_PieceBoard;
-    boardAfterMove[EndPos.Row][EndPos.Col] = boardAfterMove[StartPos.Row][StartPos.Col];
-    boardAfterMove[StartPos.Row][StartPos.Col] = PIECES_TYPE::EMPTY;
+    auto tempBoard = board;
+    tempBoard[to.Row][to.Col] = pieceAtStart;
+    tempBoard[from.Row][from.Col] = PIECES_TYPE::EMPTY;
 
-    if (Move::isWhiteKingInCheck(moveHistory, boardAfterMove, EndPos.Row, EndPos.Col))
-    {
+    if (Move::isWhiteKingInCheck(moveHistory, tempBoard, to.Row, to.Col))
         return false;
-    }
 
     return true;
 }
-
-//rook
-static bool possibleMoveRook(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard,const PiecePosition StartPos, const PiecePosition EndPos)
+bool Move::canEnPassant(const std::array<std::array<int, 8>, 8>& board, bool isWhite, const std::vector<MoveInfo>& moveHistory)
 {
-    if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7 ||
-        EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
-    {
+    if (moveHistory.empty())
         return false;
-    }
-    if (StartPos.Col == EndPos.Col)
-    {
-        for (int i = StartPos.Row - 1; i >= 0; i--)
-        {
-            if (i == EndPos.Row)
-            {
-                if (p_PieceBoard[i][StartPos.Col] != PIECES_TYPE::EMPTY)
-                    return true;
-                return true;
-            }
-            if (p_PieceBoard[i][StartPos.Col] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
 
-        }
-        for (int i = StartPos.Row + 1; i <= 7; i++)
-        {
-            if (i == EndPos.Row)
-            {
-                if (p_PieceBoard[i][StartPos.Col] != PIECES_TYPE::EMPTY)
-                    return true;
-                return true;
-            }
-            if (p_PieceBoard[i][StartPos.Col] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
-        }
-    }
-    if (StartPos.Row == EndPos.Row)
+    const MoveInfo& lastMove = moveHistory.back();
+    int enemyPawn = isWhite ? PIECES_TYPE::BLACK_PAWN : PIECES_TYPE::WHITE_PAWN;
+    int row = isWhite ? 3 : 4;
+
+    if (lastMove.pieceMoved == enemyPawn && abs(lastMove.startX - lastMove.endX) == 2)
     {
-        for (int i = StartPos.Col - 1 ; i >= 0; i--)
+        if (lastMove.endX == row && (board[row][lastMove.endY + 1] == (isWhite ? PIECES_TYPE::WHITE_PAWN : PIECES_TYPE::BLACK_PAWN) ||
+                                     board[row][lastMove.endY - 1] == (isWhite ? PIECES_TYPE::WHITE_PAWN : PIECES_TYPE::BLACK_PAWN)))
         {
-            if (i == EndPos.Col)
-            {
-                if (p_PieceBoard[StartPos.Row][i] != PIECES_TYPE::EMPTY)
-                    return true;
-                return true;
-            }
-            if (p_PieceBoard[StartPos.Row][i] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
-        }
-        for (int i = StartPos.Col + 1; i <= 7; i++)
-        {
-            if (i == EndPos.Col)
-            {
-                if (p_PieceBoard[StartPos.Row][i] != PIECES_TYPE::EMPTY)
-                    return true;
-                return true;
-            }
-            if (p_PieceBoard[StartPos.Row][i] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
+            return true;
         }
     }
     return false;
 }
-
-//bishop
-static bool possibleMoveBishop(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard,const PiecePosition StartPos, const PiecePosition EndPos)
+bool possibleMoveBlackPawn(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to)
 {
-    if (StartPos.Row < 0 || StartPos.Row > 7 || StartPos.Col < 0 || StartPos.Col > 7 ||
-        EndPos.Row < 0 || EndPos.Row > 7 || EndPos.Col < 0 || EndPos.Col > 7)
-    {
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
         return false;
-    }
-    int _row = 0, _col = 0;
-    _row = StartPos.Row - 1;
-    _col = StartPos.Col - 1;
-    while (_row >= 0 && _col >= 0)
-    {
-        if (_row == EndPos.Row && _col == EndPos.Col)
-        {
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-                return true;
-            return true;
-        }
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
-            _row--; _col--;
 
-    }
-    _row = StartPos.Row + 1;
-    _col = StartPos.Col + 1;
-    while (_row <= 7 && _col <= 7)
-    {
-        if (_row == EndPos.Row && _col == EndPos.Col)
-        {
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-                return true;
-            return true;
-        }
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-            {
-                break;
-            }
-            _row++; _col++;
+    int dRow = to.Row - from.Row;
+    int dCol = abs(from.Col - to.Col);
 
-    }
-    _row = StartPos.Row - 1;
-    _col = StartPos.Col + 1;
-    while (_row >= 0 && _col <= 7)
-    {
-        if (_row == EndPos.Row && _col == EndPos.Col)
-        {
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-                return true;
-            return true;
-        }
-        if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-        {
-            break;
-        }
-        _row--; _col++;
+    if (dRow == 1 && dCol == 0 && board[to.Row][to.Col] == PIECES_TYPE::EMPTY)
+        return true;
 
-    }
-    _row = StartPos.Row + 1;
-    _col = StartPos.Col - 1;
-    while (_row <= 7 && _col >= 0)
-    {
-        if (_row == EndPos.Row && _col == EndPos.Col)
-        {
-            if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-                return true;
-            return true;
-        }
-        if (p_PieceBoard[_row][_col] != PIECES_TYPE::EMPTY)
-        {
-            break;
-        }
-        _row++; _col--;
+    if (from.Row == 1 && dRow == 2 && dCol == 0 && board[to.Row][to.Col] == PIECES_TYPE::EMPTY &&
+        board[from.Row + 1][from.Col] == PIECES_TYPE::EMPTY)
+        return true;
 
-    }
+    if (dRow == 1 && dCol == 1 && board[to.Row][to.Col] > 0)
+        return true;
+
     return false;
 }
 
-//queen
-bool possibleMoveQueen(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard,const PiecePosition StartPos, const PiecePosition EndPos)
+bool possibleMoveWhitePawn(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to)
 {
-    if (0 <= EndPos.Row && EndPos.Row <= 7 && 0 <= EndPos.Col && EndPos.Col <= 7)
-    {
-        if (possibleMoveRook(p_PieceBoard,StartPos, EndPos) || possibleMoveBishop(p_PieceBoard, StartPos, EndPos))
-        {
-            return true;
-        }
-    }
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
+        return false;
+
+    int dRow = from.Row - to.Row;
+    int dCol = abs(from.Col - to.Col);
+
+    if (dRow == 1 && dCol == 0 && board[to.Row][to.Col] == PIECES_TYPE::EMPTY)
+        return true;
+
+    if (from.Row == 6 && dRow == 2 && dCol == 0 && board[to.Row][to.Col] == PIECES_TYPE::EMPTY &&
+        board[from.Row - 1][from.Col] == PIECES_TYPE::EMPTY)
+        return true;
+
+    if (dRow == 1 && dCol == 1 && board[to.Row][to.Col] < 0)
+        return true;
+
     return false;
 }
 
-//knight
-bool possibleMoveKnight(const PiecePosition StartPos, const PiecePosition EndPos)
+bool possibleMoveRook(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to)
 {
-    if (0 <= EndPos.Row && EndPos.Row <= 7 && 0 <= EndPos.Col && EndPos.Col <= 7)
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
+        return false;
+
+    if (from.Col == to.Col)
     {
-        if (StartPos.Row -1 == EndPos.Row && StartPos.Col + -2 == EndPos.Col)
+        if (from.Row < to.Row)
         {
-            return true;
+            for (int i = from.Row + 1; i < to.Row; i++)
+                if (board[i][from.Col] != PIECES_TYPE::EMPTY)
+                    return false;
         }
-        else if (StartPos.Row + 1 == EndPos.Row && StartPos.Col - 2 == EndPos.Col)
+        else
         {
-            return true;
+            for (int i = from.Row - 1; i > to.Row; i--)
+                if (board[i][from.Col] != PIECES_TYPE::EMPTY)
+                    return false;
         }
-        else if (StartPos.Row + 2 == EndPos.Row && StartPos.Col - 1 == EndPos.Col)
+        return true;
+    }
+    else if (from.Row == to.Row)
+    {
+        if (from.Col < to.Col)
         {
-            return true;
+            for (int i = from.Col + 1; i < to.Col; i++)
+                if (board[from.Row][i] != PIECES_TYPE::EMPTY)
+                    return false;
         }
-        else if (StartPos.Row - 2 == EndPos.Row && StartPos.Col - 1 == EndPos.Col)
+        else
         {
-            return true;
+            for (int i = from.Col - 1; i > to.Col; i--)
+                if (board[from.Row][i] != PIECES_TYPE::EMPTY)
+                    return false;
         }
-        else if (StartPos.Row - 2 == EndPos.Row && StartPos.Col + 1 == EndPos.Col)
-        {
-            return true;
-        }
-        else if (StartPos.Row - 1 == EndPos.Row && StartPos.Col + 2 == EndPos.Col)
-        {
-            return true;
-        }
-        else if (StartPos.Row + 1 == EndPos.Row && StartPos.Col + 2 == EndPos.Col)
-        {
-            return true;
-        }
-        else if (StartPos.Row + 2 == EndPos.Row && StartPos.Col + 1 == EndPos.Col)
-        {
-            return true;
-        }
+        return true;
     }
     return false;
 }
 
-bool Move::ValidMove(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard, PiecePosition p_OldPosition, PiecePosition p_NewPosition, const std::vector<MoveInfo>& moveHistory)
+bool possibleMoveBishop(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to)
+{
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
+        return false;
+
+    int dRow = to.Row - from.Row;
+    int dCol = to.Col - from.Col;
+
+    if (abs(dRow) != abs(dCol))
+        return false;
+
+    int stepRow = (dRow > 0) ? 1 : -1;
+    int stepCol = (dCol > 0) ? 1 : -1;
+
+    int currRow = from.Row + stepRow;
+    int currCol = from.Col + stepCol;
+    while (currRow != to.Row && currCol != to.Col)
+    {
+        if (board[currRow][currCol] != PIECES_TYPE::EMPTY)
+            return false;
+        currRow += stepRow;
+        currCol += stepCol;
+    }
+    return true;
+}
+
+bool possibleMoveQueen(const std::array<std::array<int, 8>, 8>& board, const PiecePosition& from, const PiecePosition& to)
+{
+    if (from.Row < 0 || from.Row > 7 || from.Col < 0 || from.Col > 7 ||
+        to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
+        return false;
+
+    return possibleMoveRook(board, from, to) || possibleMoveBishop(board, from, to);
+}
+
+bool possibleMoveKnight(const PiecePosition& from, const PiecePosition& to)
+{
+    if (to.Row < 0 || to.Row > 7 || to.Col < 0 || to.Col > 7)
+        return false;
+
+    int dRow = abs(to.Row - from.Row);
+    int dCol = abs(to.Col - from.Col);
+
+    return (dRow == 2 && dCol == 1) || (dRow == 1 && dCol == 2);
+}
+
+bool Move::ValidMove(const std::array<std::array<int, 8>, 8>& board, PiecePosition from, PiecePosition to, const std::vector<MoveInfo>& moveHistory)
 {
     bool _ValidMove = false;
-    int _PIECETYPE = p_PieceBoard[p_OldPosition.Row][p_OldPosition.Col];
+    int _PIECETYPE = board[from.Row][from.Col];
 
     switch (_PIECETYPE)
     {
     case PIECES_TYPE::BLACK_PAWN:
-        _ValidMove = possibleMoveBlackPawn(p_PieceBoard, p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveBlackPawn(board, from, to);
         break;
     case PIECES_TYPE::WHITE_PAWN:
-        _ValidMove = possibleMoveWhitePawn(p_PieceBoard, p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveWhitePawn(board, from, to);
         break;
     case PIECES_TYPE::BLACK_KING:
-        _ValidMove = possibleMoveBlackKing(p_PieceBoard, p_OldPosition, p_NewPosition, moveHistory);
+        _ValidMove = possibleMoveBlackKing(board, from, to, moveHistory);
         break;
     case PIECES_TYPE::WHITE_KING:
-        _ValidMove = possibleMoveWhiteKing(p_PieceBoard, p_OldPosition, p_NewPosition, moveHistory);
+        _ValidMove = possibleMoveWhiteKing(board, from, to, moveHistory);
         break;
     case PIECES_TYPE::WHITE_ROOK:
     case PIECES_TYPE::BLACK_ROOK:
-        _ValidMove = possibleMoveRook(p_PieceBoard, p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveRook(board, from, to);
         break;
     case PIECES_TYPE::WHITE_BISHOP:
     case PIECES_TYPE::BLACK_BISHOP:
-        _ValidMove = possibleMoveBishop(p_PieceBoard, p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveBishop(board, from, to);
         break;
     case PIECES_TYPE::WHITE_QUEEN:
     case PIECES_TYPE::BLACK_QUEEN:
-        _ValidMove = possibleMoveQueen(p_PieceBoard, p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveQueen(board, from, to);
         break;
     case PIECES_TYPE::WHITE_KNIGHT:
     case PIECES_TYPE::BLACK_KNIGHT:
-        _ValidMove = possibleMoveKnight(p_OldPosition, p_NewPosition);
+        _ValidMove = possibleMoveKnight(from, to);
         break;
     }
 
     if (!_ValidMove) return false;
 
-    if ((_PIECETYPE > 0 && isWhite(p_PieceBoard, p_NewPosition)) ||
-        (_PIECETYPE < 0 && isBlack(p_PieceBoard, p_NewPosition)))
+    if ((_PIECETYPE > 0 && isWhite(board, to)) || (_PIECETYPE < 0 && isBlack(board, to)))
     {
         return false;
     }
@@ -427,12 +344,11 @@ bool Move::ValidMove(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LIN
 }
 
 /*
-bool Move::isGameOver(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard)
-{
+bool Move::isGameOver(const std::array<std::array<int, 8>, 8>& board)
     return false;
 }
 
-PieceColor Move::getWinner(std::array<std::array<int, MAX_PIECES_LINE>, MAX_PIECES_LINE> p_PieceBoard)
+PieceColor Move::getWinner(const std::array<std::array<int, 8>, 8>& board)
 {
     return PieceColor();
 }

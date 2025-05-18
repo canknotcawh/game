@@ -16,7 +16,7 @@ void Button::initButton()
 
 Button::Button(SDL_Renderer* p_Renderer, std::string text, const char* filename)
 {
-	int _ButtonSize = text.size();
+	text.size();
 	initButton();
 	init_UI(p_Renderer, { 0,0,0,255}, { 0,0,300,100});
 	m_FontPath = filename;
