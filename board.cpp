@@ -1,6 +1,4 @@
-#include "piecesdefs.h"
 #include "board.h"
-#include "move.h"
 #include "colordefs.h"
 #include <iostream>
 
@@ -10,186 +8,160 @@ static bool round(int num)
 }
 void Board::BlackPawnHint()
 {
-    if (m_Player.row < 0 || m_Player.row > 7 || m_Player.col < 0 || m_Player.col > 7)
-    {
+    if (Move::isPinned(m_Player.BoardPieces, m_MoveHistory, m_Player.row, m_Player.col))
         return;
-    }
-    if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col] == PIECES_TYPE::EMPTY && m_Player.row >= 0 && m_Player.row <= 7)
-    {
+
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
+
+    if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col] == PIECES_TYPE::EMPTY) {
         SetHighlight(m_Player.row + 1, m_Player.col);
-    }
-    if (m_Player.row == 1 && m_Player.row >= 0 && m_Player.row <= 7)
-    {
-        if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col] == PIECES_TYPE::EMPTY)
-        {
-            if (m_Player.BoardPieces[m_Player.row + 2][m_Player.col] == PIECES_TYPE::EMPTY)
-            {
-                SetHighlight(m_Player.row + 2, m_Player.col);
-            }
+        if (m_Player.row == 1 && m_Player.BoardPieces[m_Player.row + 2][m_Player.col] == PIECES_TYPE::EMPTY) {
+            SetHighlight(m_Player.row + 2, m_Player.col);
         }
     }
-    if (m_Player.col >= 1)
-    {
-        if ((m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 1] != PIECES_TYPE::EMPTY))
-        {
-            if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 1] > 0)
-            {
-                showPieceHightlight(m_Player.row + 1, m_Player.col - 1);
-            }
-        }
+
+    if (m_Player.col > 0 && m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 1] > 0) {
+        SetHighlight(m_Player.row + 1, m_Player.col - 1);
     }
-    if (m_Player.col <= 6)
-    {
-        if ((m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 1] != PIECES_TYPE::EMPTY))
-        {
-            if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 1] > 0)
-            {
-                showPieceHightlight(m_Player.row + 1, m_Player.col + 1);
-            }
-        }
+
+    if (m_Player.col < 7 && m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 1] > 0) {
+        SetHighlight(m_Player.row + 1, m_Player.col + 1);
+    }
+
+    if (Move::canEnPassantLeft(m_Player.BoardPieces, false, m_MoveHistory, m_Player.row, m_Player.col)) {
+        SetHighlight(m_Player.row + 1, m_Player.col - 1);
+    }
+
+    if (Move::canEnPassantRight(m_Player.BoardPieces, false, m_MoveHistory, m_Player.row, m_Player.col)) {
+        SetHighlight(m_Player.row + 1, m_Player.col + 1);
     }
 }
 void Board::WhitePawnHint()
 {
-    if (m_Player.row < 1 || m_Player.row > 6 || m_Player.col < 0 || m_Player.col > 7)
-    {
+    if (Move::isPinned(m_Player.BoardPieces, m_MoveHistory, m_Player.row, m_Player.col))
         return;
-    }
-    if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col] == PIECES_TYPE::EMPTY && m_Player.row >= 0 && m_Player.row <= 7)
-    {
+
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
+
+    if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col] == PIECES_TYPE::EMPTY) {
         SetHighlight(m_Player.row - 1, m_Player.col);
-    }
-    if (m_Player.row == 6 && m_Player.row >= 0 && m_Player.row <= 7)
-    {
-        if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col] == PIECES_TYPE::EMPTY)
-        {
-            if (m_Player.BoardPieces[m_Player.row - 2][m_Player.col] == PIECES_TYPE::EMPTY)
-            {
-                SetHighlight(m_Player.row - 2, m_Player.col);
-            }
+        if (m_Player.row == 6 && m_Player.BoardPieces[m_Player.row - 2][m_Player.col] == PIECES_TYPE::EMPTY) {
+            SetHighlight(m_Player.row - 2, m_Player.col);
         }
     }
-    if (m_Player.col >= 1)
-    {
-        if ((m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 1] != PIECES_TYPE::EMPTY))
-        {
-            if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 1] < 0)
-            {
-                showPieceHightlight(m_Player.row - 1, m_Player.col - 1);
-            }
-        }
+    if (m_Player.col > 0 && m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 1] < 0) {
+        SetHighlight(m_Player.row - 1, m_Player.col - 1);
     }
-    if (m_Player.col <= 6)
-    {
-        if ((m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 1] != PIECES_TYPE::EMPTY))
-        {
-            if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 1] < 0)
-            {
-                showPieceHightlight(m_Player.row - 1, m_Player.col + 1);
-            }
-        }
+    if (m_Player.col < 7 && m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 1] < 0) {
+        SetHighlight(m_Player.row - 1, m_Player.col + 1);
+    }
+
+    if (Move::canEnPassantLeft(m_Player.BoardPieces, true, m_MoveHistory, m_Player.row, m_Player.col)) {
+        SetHighlight(m_Player.row - 1, m_Player.col - 1);
+    }
+
+    if (Move::canEnPassantRight(m_Player.BoardPieces, true, m_MoveHistory, m_Player.row, m_Player.col)) {
+        SetHighlight(m_Player.row - 1, m_Player.col + 1);
     }
 }
 void Board::BlackKingHint()
 {
-    int row = m_Player.row, col = m_Player.col;
-
-    if (row < 0 || row > 7 || col < 0 || col > 7) return;
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
 
     auto tempBoard = m_Player.BoardPieces;
 
-    if (Move::isBlackKingInCheck(moveManager.getMoveHistory(), tempBoard, row, col))
+    if (Move::isBlackKingInCheck(tempBoard, moveManager.getMoveHistory(), m_Player.row, m_Player.col))
     {
-        showPieceHightlight(row, col);
+        showPieceHightlight(m_Player.row, m_Player.col);
     }
 
-    for (int i = row - 1; i <= row + 1; i++)
+    for (int i = m_Player.row - 1; i <= m_Player.row + 1; i++)
     {
-        for (int j = col - 1; j <= col + 1; j++)
+        for (int j = m_Player.col - 1; j <= m_Player.col + 1; j++)
         {
             if (i >= 0 && i <= 7 && j >= 0 && j <= 7)
             {
-                if (i == row && j == col) continue;
+                if (i == m_Player.row && j == m_Player.col) continue;
 
-                int targetPiece = m_Player.BoardPieces[i][j];
+                int targetPiece = tempBoard[i][j];
 
                 if (targetPiece < 0) continue;
 
                 int originalPiece = tempBoard[i][j];
-                tempBoard[i][j] = tempBoard[row][col];
-                tempBoard[row][col] = PIECES_TYPE::EMPTY;
+                tempBoard[i][j] = tempBoard[m_Player.row][m_Player.col];
+                tempBoard[m_Player.row][m_Player.col] = PIECES_TYPE::EMPTY;
 
-                if (!Move::isBlackKingInCheck(moveManager.getMoveHistory(), tempBoard, i, j))
+                if (!Move::isBlackKingInCheck(tempBoard, moveManager.getMoveHistory(), i, j))
                 {
                     SetHighlight(i, j);
                 }
 
-                tempBoard[row][col] = tempBoard[i][j];
+                tempBoard[m_Player.row][m_Player.col] = tempBoard[i][j];
                 tempBoard[i][j] = originalPiece;
             }
         }
     }
-    if (Move::canCastle(tempBoard, false, moveManager.getMoveHistory()))
-    {
-        if (tempBoard[0][5] == PIECES_TYPE::EMPTY && tempBoard[0][6] == PIECES_TYPE::EMPTY)
-        {
+    if (Move::canCastle(tempBoard, false, moveManager.getMoveHistory())) {
+        if (tempBoard[0][5] == PIECES_TYPE::EMPTY && tempBoard[0][6] == PIECES_TYPE::EMPTY &&
+            tempBoard[0][7] == PIECES_TYPE::BLACK_ROOK) {
             SetHighlight(0, 6);
         }
 
-        if (tempBoard[0][1] == PIECES_TYPE::EMPTY && tempBoard[0][2] == PIECES_TYPE::EMPTY && tempBoard[0][3] == PIECES_TYPE::EMPTY)
-        {
+        if (tempBoard[0][1] == PIECES_TYPE::EMPTY && tempBoard[0][2] == PIECES_TYPE::EMPTY &&
+            tempBoard[0][3] == PIECES_TYPE::EMPTY && tempBoard[0][0] == PIECES_TYPE::BLACK_ROOK) {
             SetHighlight(0, 2);
         }
     }
 }
 void Board::WhiteKingHint()
 {
-    int row = m_Player.row, col = m_Player.col;
-
-    if (row < 0 || row > 7 || col < 0 || col > 7) return;
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
 
     auto tempBoard = m_Player.BoardPieces;
 
-    if (Move::isWhiteKingInCheck(moveManager.getMoveHistory(), tempBoard, row, col))
+    if (Move::isWhiteKingInCheck(tempBoard, moveManager.getMoveHistory(), m_Player.row, m_Player.col))
     {
-        showPieceHightlight(row, col);
+        showPieceHightlight(m_Player.row, m_Player.col);
     }
 
-    for (int i = row - 1; i <= row + 1; i++)
+    for (int i = m_Player.row - 1; i <= m_Player.row + 1; i++)
     {
-        for (int j = col - 1; j <= col + 1; j++)
+        for (int j = m_Player.col - 1; j <= m_Player.col + 1; j++)
         {
             if (i >= 0 && i <= 7 && j >= 0 && j <= 7)
             {
-                if (i == row && j == col) continue;
+                if (i == m_Player.row && j == m_Player.col) continue;
 
-                int targetPiece = m_Player.BoardPieces[i][j];
+                int targetPiece = tempBoard[i][j];
 
                 if (targetPiece > 0) continue;
 
                 int originalPiece = tempBoard[i][j];
-                tempBoard[i][j] = tempBoard[row][col];
-                tempBoard[row][col] = PIECES_TYPE::EMPTY;
+                tempBoard[i][j] = tempBoard[m_Player.row][m_Player.col];
+                tempBoard[m_Player.row][m_Player.col] = PIECES_TYPE::EMPTY;
 
-                if (!Move::isWhiteKingInCheck(moveManager.getMoveHistory(), tempBoard, i, j))
+                if (!Move::isWhiteKingInCheck(tempBoard, moveManager.getMoveHistory(), i, j))
                 {
                     SetHighlight(i, j);
                 }
 
-                tempBoard[row][col] = tempBoard[i][j];
+                tempBoard[m_Player.row][m_Player.col] = tempBoard[i][j];
                 tempBoard[i][j] = originalPiece;
             }
         }
     }
-    if (Move::canCastle(tempBoard, true, moveManager.getMoveHistory()))
-    {
-        if (tempBoard[7][5] == PIECES_TYPE::EMPTY && tempBoard[7][6] == PIECES_TYPE::EMPTY)
-        {
+    if (Move::canCastle(tempBoard, true, moveManager.getMoveHistory())) {
+        if (tempBoard[7][5] == PIECES_TYPE::EMPTY && tempBoard[7][6] == PIECES_TYPE::EMPTY &&
+            tempBoard[7][7] == PIECES_TYPE::WHITE_ROOK) {
             SetHighlight(7, 6);
         }
 
-        if (tempBoard[7][1] == PIECES_TYPE::EMPTY && tempBoard[7][2] == PIECES_TYPE::EMPTY && tempBoard[7][3] == PIECES_TYPE::EMPTY)
-        {
+        if (tempBoard[7][1] == PIECES_TYPE::EMPTY && tempBoard[7][2] == PIECES_TYPE::EMPTY &&
+            tempBoard[7][3] == PIECES_TYPE::EMPTY && tempBoard[7][0] == PIECES_TYPE::WHITE_ROOK) {
             SetHighlight(7, 2);
         }
     }
@@ -201,6 +173,9 @@ void Board::QueenHint()
 }
 void Board::KnightHint()
 {
+    if (Move::isPinned(m_Player.BoardPieces, m_MoveHistory, m_Player.row, m_Player.col))
+        return;
+
     if ((0 <= m_Player.row && m_Player.row <= 7) || (0 <= m_Player.col && m_Player.col <= 7))
     {
         int pieceColor = round(m_Player.BoardPieces[m_Player.row][m_Player.col]);
@@ -208,7 +183,7 @@ void Board::KnightHint()
         if (m_Player.row - 1 <= 7 && m_Player.row - 1 >= 0 && m_Player.col - 2 <= 7 && m_Player.col - 2 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 2]) != pieceColor && m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 2] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row - 1, m_Player.col - 2);
+                SetHighlight(m_Player.row - 1, m_Player.col - 2);
             else if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col - 2] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row - 1, m_Player.col - 2);
@@ -217,7 +192,7 @@ void Board::KnightHint()
         if (m_Player.row + 1 <= 7 && m_Player.row + 1 >= 0 && m_Player.col - 2 <= 7 && m_Player.col - 2 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 2]) != pieceColor && m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 2] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row + 1, m_Player.col - 2);
+                SetHighlight(m_Player.row + 1, m_Player.col - 2);
             else if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col - 2] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row + 1, m_Player.col - 2);
@@ -226,7 +201,7 @@ void Board::KnightHint()
         if (m_Player.row + 2 <= 7 && m_Player.row + 2 >= 0 && m_Player.col - 1 <= 7 && m_Player.col - 1 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row + 2][m_Player.col - 1]) != pieceColor && m_Player.BoardPieces[m_Player.row + 2][m_Player.col - 1] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row + 2, m_Player.col - 1);
+                SetHighlight(m_Player.row + 2, m_Player.col - 1);
             else if (m_Player.BoardPieces[m_Player.row + 2][m_Player.col - 1] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row + 2, m_Player.col - 1);
@@ -235,7 +210,7 @@ void Board::KnightHint()
         if (m_Player.row - 2 <= 7 && m_Player.row - 2 >= 0 && m_Player.col - 1 <= 7 && m_Player.col - 1 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row - 2][m_Player.col - 1]) != pieceColor && m_Player.BoardPieces[m_Player.row - 2][m_Player.col - 1] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row - 2, m_Player.col - 1);
+                SetHighlight(m_Player.row - 2, m_Player.col - 1);
             else if (m_Player.BoardPieces[m_Player.row - 2][m_Player.col - 1] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row - 2, m_Player.col - 1);
@@ -244,7 +219,7 @@ void Board::KnightHint()
         if (m_Player.row - 2 <= 7 && m_Player.row - 2 >= 0 && m_Player.col + 1 <= 7 && m_Player.col + 1 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row - 2][m_Player.col + 1]) != pieceColor && m_Player.BoardPieces[m_Player.row - 2][m_Player.col + 1] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row - 2, m_Player.col + 1);
+                SetHighlight(m_Player.row - 2, m_Player.col + 1);
             else if (m_Player.BoardPieces[m_Player.row - 2][m_Player.col + 1] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row - 2, m_Player.col + 1);
@@ -253,7 +228,7 @@ void Board::KnightHint()
         if (m_Player.row - 1 <= 7 && m_Player.row - 1 >= 0 && m_Player.col + 2 <= 7 && m_Player.col + 2 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 2]) != pieceColor && m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 2] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row - 1, m_Player.col + 2);
+                SetHighlight(m_Player.row - 1, m_Player.col + 2);
             else if (m_Player.BoardPieces[m_Player.row - 1][m_Player.col + 2] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row - 1, m_Player.col + 2);
@@ -262,16 +237,7 @@ void Board::KnightHint()
         if (m_Player.row + 1 <= 7 && m_Player.row + 1 >= 0 && m_Player.col + 2 <= 7 && m_Player.col + 2 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2]) != pieceColor && m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row + 1, m_Player.col + 2);
-            else if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2] == PIECES_TYPE::EMPTY)
-            {
                 SetHighlight(m_Player.row + 1, m_Player.col + 2);
-            }
-        }
-        if (m_Player.row + 1 <= 7 && m_Player.row + 1 >= 0 && m_Player.col + 2 <= 7 && m_Player.col + 2 >= 0)
-        {
-            if (round(m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2]) != pieceColor && m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row + 1, m_Player.col + 2);
             else if (m_Player.BoardPieces[m_Player.row + 1][m_Player.col + 2] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row + 1, m_Player.col + 2);
@@ -280,7 +246,7 @@ void Board::KnightHint()
         if (m_Player.row + 2 <= 7 && m_Player.row + 2 >= 0 && m_Player.col + 1 <= 7 && m_Player.col + 1 >= 0)
         {
             if (round(m_Player.BoardPieces[m_Player.row + 2][m_Player.col + 1]) != pieceColor && m_Player.BoardPieces[m_Player.row + 2][m_Player.col + 1] != PIECES_TYPE::EMPTY)
-                showPieceHightlight(m_Player.row + 2, m_Player.col + 1);
+                SetHighlight(m_Player.row + 2, m_Player.col + 1);
             else if (m_Player.BoardPieces[m_Player.row + 2][m_Player.col + 1] == PIECES_TYPE::EMPTY)
             {
                 SetHighlight(m_Player.row + 2, m_Player.col + 1);
@@ -290,10 +256,12 @@ void Board::KnightHint()
 }
 void Board::RookHint()
 {
-    if (m_Player.row < 0 || m_Player.row > 7 || m_Player.col < 0 || m_Player.col > 7)
-    {
+    if (Move::isPinned(m_Player.BoardPieces, m_MoveHistory, m_Player.row, m_Player.col))
         return;
-    }
+
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
+
     int pieceColor = round(m_Player.BoardPieces[m_Player.row][m_Player.col]);
     for (int i = m_Player.row - 1; i >= 0; i--)
     {
@@ -304,7 +272,7 @@ void Board::RookHint()
         if (m_Player.BoardPieces[i][m_Player.col] != PIECES_TYPE::EMPTY)
         {
             if (round(m_Player.BoardPieces[i][m_Player.col]) != pieceColor)
-                showPieceHightlight(i, m_Player.col);
+                SetHighlight(i, m_Player.col);
         }
         if (m_Player.BoardPieces[i][m_Player.col] != PIECES_TYPE::EMPTY)
         {
@@ -320,7 +288,7 @@ void Board::RookHint()
         if (m_Player.BoardPieces[i][m_Player.col] != PIECES_TYPE::EMPTY)
         {
             if (round(m_Player.BoardPieces[i][m_Player.col]) != pieceColor)
-                showPieceHightlight(i, m_Player.col);
+                SetHighlight(i, m_Player.col);
         }
         if (m_Player.BoardPieces[i][m_Player.col] != PIECES_TYPE::EMPTY)
         {
@@ -337,7 +305,7 @@ void Board::RookHint()
         if (m_Player.BoardPieces[m_Player.row][i] != PIECES_TYPE::EMPTY)
         {
             if (round(m_Player.BoardPieces[m_Player.row][i]) != pieceColor)
-                showPieceHightlight(m_Player.row, i);
+                SetHighlight(m_Player.row, i);
         }
         if (m_Player.BoardPieces[m_Player.row][i] != PIECES_TYPE::EMPTY)
         {
@@ -353,7 +321,7 @@ void Board::RookHint()
         if (m_Player.BoardPieces[m_Player.row][i] != PIECES_TYPE::EMPTY)
         {
             if (round(m_Player.BoardPieces[m_Player.row][i]) != pieceColor)
-                showPieceHightlight(m_Player.row, i);
+                SetHighlight(m_Player.row, i);
         }
         if (m_Player.BoardPieces[m_Player.row][i] != PIECES_TYPE::EMPTY)
         {
@@ -363,10 +331,12 @@ void Board::RookHint()
 }
 void Board::BishopHint()
 {
-    if (m_Player.row < 0 || m_Player.row > 7 || m_Player.col < 0 || m_Player.col > 7)
-    {
+    if (Move::isPinned(m_Player.BoardPieces, m_MoveHistory, m_Player.row, m_Player.col))
         return;
-    }
+
+    if (!(0 <= m_Player.row && m_Player.row <= 7 && 0 <= m_Player.col && m_Player.col <= 7))
+        return;
+
     int pieceColor = round(m_Player.BoardPieces[m_Player.row][m_Player.col]);
     int _row = 0, _col = 0;
     _row = m_Player.row - 1;
@@ -381,7 +351,7 @@ void Board::BishopHint()
         {
             if (round(m_Player.BoardPieces[_row][_col]) != pieceColor)
             {
-                showPieceHightlight(_row, _col);
+                SetHighlight(_row, _col);
             }
             break;
         }
@@ -400,7 +370,7 @@ void Board::BishopHint()
         {
             if (round(m_Player.BoardPieces[_row][_col]) != pieceColor)
             {
-                showPieceHightlight(_row, _col);
+                SetHighlight(_row, _col);
             }
             break;
         }
@@ -419,7 +389,7 @@ void Board::BishopHint()
         {
             if (round(m_Player.BoardPieces[_row][_col]) != pieceColor)
             {
-                showPieceHightlight(_row, _col);
+                SetHighlight(_row, _col);
             }
             break;
         }
@@ -438,7 +408,7 @@ void Board::BishopHint()
         {
             if (round(m_Player.BoardPieces[_row][_col]) != pieceColor)
             {
-                showPieceHightlight(_row, _col);
+                SetHighlight(_row, _col);
             }
             break;
         }
@@ -458,10 +428,10 @@ void Board::resetBoardColor() {
     for (int row = 0; row <= 7; row++) {
         for (int column = 0; column <= 7; column++) {
             if ((row + column) % 2 == 0) {
-                m_BoardColor[row][column] = SDL_Color{211, 211, 211, 255};
+                m_BoardColor[row][column] = SDL_Color{222, 184, 135, 255};
             }
             else {
-                m_BoardColor[row][column] = SDL_Color{0, 128, 128, 255};
+                m_BoardColor[row][column] = SDL_Color{119, 73, 49, 255};
             }
         }
     }
@@ -537,18 +507,27 @@ void Board::UpdatePlayer(Player p_Player)
         resetBoardColor();
     }
 }
+
 void Board::drawBoard()
 {
+    int boardPixelWidth = 8 * m_PiecesSize;
+    int boardOffsetX = (g_WINDOW_WIDTH - boardPixelWidth) / 2;
+
     for (int row = 0; row <= 7; row++)
     {
         for (int column = 0; column <= 7; column++)
         {
             SDL_Rect _block = {};
-            _block.x = column * m_PiecesSize;
+            _block.x = boardOffsetX + column * m_PiecesSize;
             _block.y = row * m_PiecesSize;
             _block.w = _block.h = m_PiecesSize;
 
-            SDL_SetRenderDrawColor(m_Renderer, m_BoardColor[row][column].r, m_BoardColor[row][column].g, m_BoardColor[row][column].b, m_BoardColor[row][column].a);
+            SDL_SetRenderDrawColor(m_Renderer,
+                m_BoardColor[row][column].r,
+                m_BoardColor[row][column].g,
+                m_BoardColor[row][column].b,
+                m_BoardColor[row][column].a);
+
             SDL_RenderFillRect(m_Renderer, &_block);
         }
     }
@@ -558,4 +537,3 @@ int Board::getPieceSize() const
 {
     return m_PiecesSize;
 }
-
