@@ -5,7 +5,7 @@
 void Button::initButton()
 {
 	m_FontPath = "";
-	m_FontSize = DEFAULTBUTTON_FONT_SIZE;
+	m_FontSize = 19;
 
 	UI_Box = {};
 	m_ButtonTextColor = {0, 0, 255, 255};
