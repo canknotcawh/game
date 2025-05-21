@@ -21,8 +21,6 @@
   * Logic chiếu, chặn, ghim, hòa cờ, checkmate, stalemate, en passant,...
 
 ![image](chessboard.png)
-
-![image](move.png)
   
   * SFX khi đặt quân, background music
      
