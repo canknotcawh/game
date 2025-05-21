@@ -17,13 +17,15 @@ Game::Game(const char* p_Title, int p_Width,int p_Height)
     m_Window = SDL_CreateWindow(p_Title, SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,
                                 p_Width, p_Height, SDL_WINDOW_SHOWN);
     m_Renderer = SDL_CreateRenderer(m_Window,-1, SDL_RENDERER_PRESENTVSYNC);
-    m_BoardPieces = new PiecesManager(m_Renderer,p_Height);
+    m_BoardPieces = new PiecesManager(m_Renderer, p_Height);
     m_Board = new Board(p_Height,m_Renderer);
     m_BoardPieces->setSize(m_Board->getPieceSize());
     updateMousePosition();
+    soundManager.loadSound("sounds/validmove.wav");
 }
 Game::~Game()
 {
+    soundManager.clean();
     if (m_CurrentmouseX != NULL || m_CurrentmouseY != NULL){
         delete m_CurrentmouseX;
         delete m_CurrentmouseY;
@@ -48,23 +50,31 @@ void Game::resetGame()
     m_Running = true;
     m_BoardPieces->resetPieces();
 }
-void Game::pollEvent()
-{
+void Game::pollEvent() {
     while (SDL_PollEvent(m_Event)) {
         switch (m_Event->type) {
             case SDL_QUIT:
                 m_Running = false;
                 break;
+
             case SDL_MOUSEBUTTONDOWN:
                 if (m_Event->button.button == SDL_BUTTON_LEFT) {
                     m_BoardPieces->isPieceSelect(true, m_CurrentmouseX, m_CurrentmouseY);
+                    hasPlayedMoveSound = false;
                 }
                 break;
+
             case SDL_MOUSEBUTTONUP:
                 if (m_Event->button.button == SDL_BUTTON_LEFT) {
                     m_BoardPieces->isPieceSelect(false, m_CurrentmouseX, m_CurrentmouseY);
+
+                    if (!hasPlayedMoveSound) {
+                        soundManager.playSound(0);
+                        hasPlayedMoveSound = true;
+                    }
                 }
                 break;
+
             default:
                 break;
         }
@@ -75,8 +85,10 @@ void Game::update()
     updateMousePosition();
     m_BoardPieces->updateBoardPieces(m_CurrentmouseX,m_CurrentmouseY);
     m_Board->UpdatePlayer(m_BoardPieces->getPlayer());
-    if (m_Running)
-        m_Running = (m_BoardPieces->GameOver() != "") ? false : true;
+    std::string winner = m_BoardPieces->GameOver();
+    if (!winner.empty()) {
+        m_Running = false;
+    }
 }
 void Game::render()
 {
