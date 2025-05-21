@@ -1,4 +1,4 @@
-# PONG CLONE
+# 2 PLAYER CHESS
 
 **1.Tác giả**
 
