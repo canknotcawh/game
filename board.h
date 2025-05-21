@@ -3,7 +3,11 @@
 #include <SDL_image.h>
 #include "pieces.h"
 #include "move.h"
+#include "piecesmanager.h"
 #include <array>
+
+const int g_WINDOW_WIDTH  = 600;
+const int g_WINDOW_HEIGHT = 600;
 
 class Board {
 public:
@@ -17,8 +21,6 @@ private:
     void showHints(Player p_Player);
     void showPieceHightlight(unsigned const int row, unsigned const int col);
 
-    Move moveManager;
-
     void BlackPawnHint();
     void WhitePawnHint();
     void BlackKingHint();
@@ -31,14 +33,11 @@ private:
     std::array<int, MAX_PIECES_SPACE  > m_Pieces;
     std::array<std::array<SDL_Color, 8>, 8> m_BoardColor;
     Player m_Player;
-
+    Move moveManager;
+    std::vector<MoveInfo> m_MoveHistory;
     int m_BoardSize;
     SDL_Renderer* m_Renderer;
     int m_PiecesSize = 75;
     int whiteKingX, whiteKingY;
     int blackKingX, blackKingY;
 };
-
-
-
-
