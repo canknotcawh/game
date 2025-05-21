@@ -1,5 +1,4 @@
 #include "button.h"
-#include <SDL_ttf.h>
 #include "texturemanager.h"
 #include <iostream>
 
@@ -9,40 +8,32 @@ void Button::initButton()
 	m_FontSize = DEFAULTBUTTON_FONT_SIZE;
 
 	UI_Box = {};
-	m_ButtonTextColor = { 123,44,55,255 };
-	UI_Color = { 0,0,0, 255 };
+	m_ButtonTextColor = {0, 0, 255, 255};
+	UI_Color = {0, 0, 0, 0};
 	m_ButtonTextTexture = NULL;
 }
 
-Button::Button(SDL_Renderer* p_Renderer, std::string text, const char* filename)
-{
-	text.size();
-	initButton();
-	init_UI(p_Renderer, { 0,0,0,255}, { 0,0,300,100});
-	m_FontPath = filename;
-	m_ButtonText = text;
-	createTextTexture(m_FontPath.c_str(), text.c_str());
+Button::Button(SDL_Renderer* p_Renderer, SDL_Texture* texture) {
+    UI_Renderer = p_Renderer;
+    UI_Texture = texture;
+    UI_Box = {0, 0, 382, 80};
 }
+
 
 Button::~Button()
 {
 	SDL_DestroyTexture(m_ButtonTextTexture);
 }
 
-void Button::render()
-{
-	if (UI_Texture == NULL)
-	{
-		SDL_SetRenderDrawColor(UI_Renderer, UI_Color.r, UI_Color.g, UI_Color.b, UI_Color.a );
-		SDL_RenderFillRect(UI_Renderer, &UI_Box);
-		SDL_RenderCopy(UI_Renderer, m_ButtonTextTexture, NULL, &UI_Box);
-	}
-	else
-	{
-		SDL_RenderCopy(UI_Renderer, UI_Texture, NULL, &UI_Box);
-		SDL_RenderCopy(UI_Renderer, m_ButtonTextTexture, NULL, &UI_Box);
-		std::cout << SDL_GetError() << std::endl;
-	}
+void Button::render() {
+    if (UI_Texture) {
+        SDL_RenderCopy(UI_Renderer, UI_Texture, NULL, &UI_Box);
+    }
+    else {
+        SDL_SetRenderDrawColor(UI_Renderer, UI_Color.r, UI_Color.g, UI_Color.b, UI_Color.a);
+        SDL_RenderFillRect(UI_Renderer, &UI_Box);
+        SDL_RenderCopy(UI_Renderer, m_ButtonTextTexture, NULL, &UI_Box);
+    }
 }
 
 bool Button::IsButtonClick(SDL_Event* event)
@@ -116,6 +107,3 @@ void Button::createTextTexture(const char* p_FontPath,const char* p_Text)
 	TTF_CloseFont(_font);
 	SDL_FreeSurface(_surface);
 }
-
-
-
