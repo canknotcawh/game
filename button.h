@@ -6,7 +6,7 @@
 class Button : public UI
 {
 public:
-    Button(SDL_Renderer* p_Renderer, std::string text,const char* filename);
+    Button(SDL_Renderer* renderer, SDL_Texture* texture);
     ~Button();
     void render() override;
 
