@@ -5,7 +5,7 @@
 #include <SDL_ttf.h>
 #include "board.h"
 #include "piecesmanager.h"
-#include "button.h"
+#include "soundmanager.h"
 
 class Game
 {
@@ -37,4 +37,6 @@ private:
 
     Board* m_Board;
     PiecesManager* m_BoardPieces;
+    SoundManager soundManager;
+    bool hasPlayedMoveSound = false;
 };
