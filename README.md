@@ -24,13 +24,11 @@
   
   * SFX khi đặt quân, background music
      
-  * Chỉnh sửa volume, score:
+  * Chỉnh sửa volume:
   
 ![image](volume.png)
    
 **4.Nguồn hình ảnh / âm thanh**
-
-  * [Background music](https://youtu.be/-scpRk2xZcI?si=xnB-lCSnl0YM9DKY).
   
   * [SFX & Sprites](https://www.chess.com/forum/view/general/chessboard-sound-files?page=1).
 
