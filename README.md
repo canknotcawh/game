@@ -21,6 +21,7 @@
   * Logic chiếu, chặn, ghim, hòa cờ, checkmate, stalemate, en passant,...
 
 ![image](chessboard.png)
+
 ![image](promote.png)
 
   * SFX khi đặt quân, background music
@@ -34,8 +35,6 @@
   * [SFX & Sprites](https://www.chess.com/forum/view/general/chessboard-sound-files?page=1).
 
 **5.Nguồn tham khảo và mức độ sử dụng AI**
-
-  * Tài liệu code SDL2 của [Lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php).
 
   * Cách tạo bàn cở và những nước cơ bản (https://youtu.be/Shtdw7yb5VY?si=-JqpNjXGhv1A1ZUU).
 
